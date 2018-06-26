@@ -14,10 +14,23 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = \App\Task::all();
+                //$tasks = \App\Task::all();
         
-        return view('tasks.index',['tasks'=>$tasks]);
+                //return view('tasks.index',['tasks'=>$tasks]);
+                
+                        
+        $tasks = \App\Task::all();
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            
+            return view('tasks.index', ['tasks'=>$tasks]);
+        }else {
+            return view('top');
+        }
+
     }
+
+        
 
     /**
      * Show the form for creating a new resource.
@@ -39,19 +52,28 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
+        if (\Auth::check()) {
+        $user_id = \Auth::id();
+        
         $this->validate($request, [
         'status' => 'required|max:10',
         'content' => 'required|max:191',
         ]);
         
+        
+        
         $task = new Task;
+        $task->user_id = $user_id;
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
-        
         return redirect('/');
-    }
-
+        
+        }else {
+            return view('top');
+    
+}
+}
     /**
      * Display the specified resource.
      *
